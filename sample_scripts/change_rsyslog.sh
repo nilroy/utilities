@@ -9,7 +9,7 @@ host=$1
 echo "Current server ${host}"
 echo "Uploading 32-graylog2.conf"
 $SCP  32-graylog2.conf ${host}:/tmp || return 1
-$SSH $host "sudo mv /tmp/32-graylog2.conf /etc/rsyslog.d/" || return 1
+$SSH $host "sudo cp /tmp/32-graylog2.conf /etc/rsyslog.d/" || return 1
 echo "Modifying rsyslog.conf"
 $SSH $host "sudo sed -i.sed '/PreserveFQDN on/d' /etc/rsyslog.conf" || return 1
 echo "Restarting rsyslog"
