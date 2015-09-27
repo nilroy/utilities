@@ -79,6 +79,7 @@ class FileDownloader
   end
 
   def main()
+    @downloaded = []
     timer = Timeit.ti do
       input_files = get_input_files(@input_dir)
       input_files.pmap do |input_file|
@@ -86,10 +87,14 @@ class FileDownloader
         lines = f.readlines()
         title_dir = create_title_dir(lines)
         extracted_lines = line_finder(lines)
-        files = create_files_url_list(extracted_lines)
-        download(files,title_dir)
+        if !extracted_lines.empty?
+          files = create_files_url_list(extracted_lines)
+          download(files,title_dir)
+          @downloaded.push(File.basename(title_dir))
+        end
       end
     end
+    puts "Downloaded following  - \n#{@downloaded.join("\n")}"
     puts "Download completed in #{timer.total_duration}"
   end
 end
