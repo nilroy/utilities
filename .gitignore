@@ -1,2 +1,4 @@
 sample_scripts/hosts_list
 sample_scripts/32-graylog2.conf
+.ruby-version
+Gemfile.lock
