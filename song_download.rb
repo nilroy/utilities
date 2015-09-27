@@ -15,8 +15,9 @@
 
 require 'trollop'
 require "celluloid/pmap"
+require "timeit"
 
-class SongDownloader
+class FileDownloader
 
   def initialize(input_dir:, output_dir:, matching_string: "songid")
     @input_dir = input_dir
@@ -56,37 +57,40 @@ class SongDownloader
     return l
   end
 
-  def create_songs_url_list(lines)
+  def create_files_url_list(lines)
     h = []
     lines.each do |line|
       l = line.gsub("</a></td>","").gsub("<a","").split(">")
-      song_name = l[1]
-      if !song_name.match("<td").nil?
-        song_name = song_name.split("<td")[0].strip
+      file_name = l[1]
+      if !file_name.match("<td").nil?
+        file_name = file_name.split("<td")[0].strip
       end
       url = l[0].gsub("href=","").gsub('"',"").strip
-      h.push({"name" => song_name, "url" => url})
+      h.push({"name" => file_name, "url" => url})
     end
     return h
   end
 
-  def download(songs,download_dir)
-    songs.pmap do |song_metadata|
-      puts "Downloading #{song_metadata["name"]} from #{song_metadata["url"]}"
-      `wget -O "#{download_dir}/#{song_metadata["name"]}.mp3" "#{song_metadata["url"]}"`
+  def download(files,download_dir)
+    files.pmap do |file_metadata|
+      puts "Downloading #{file_metadata["name"]} from #{file_metadata["url"]}"
+      `wget -O "#{download_dir}/#{file_metadata["name"]}.mp3" "#{file_metadata["url"]}"`
     end
   end
 
   def main()
-    input_files = get_input_files(@input_dir)
-    input_files.each do |input_file|
-      f = open(input_file,"r")
-      lines = f.readlines()
-      title_dir = create_title_dir(lines)
-      extracted_lines = line_finder(lines)
-      songs = create_songs_url_list(extracted_lines)
-      download(songs,title_dir)
+    timer = Timeit.ti do
+      input_files = get_input_files(@input_dir)
+      input_files.each do |input_file|
+        f = open(input_file,"r")
+        lines = f.readlines()
+        title_dir = create_title_dir(lines)
+        extracted_lines = line_finder(lines)
+        files = create_files_url_list(extracted_lines)
+        download(files,title_dir)
+      end
     end
+    puts "Download completed in #{timer.total_duration}"
   end
 end
 
@@ -95,14 +99,14 @@ if __FILE__ == $0
   opts = Trollop::options do
     opt :input_dir, 'Input Directory containing the html files', :type => :string, :default => nil
     opt :output_dir, 'Output Directory to store the downloaded files', :type => :string, :default => nil
-    opt :matching_string, 'String to find the song URL', :type => :string, :default => 'songid'
+    opt :matching_string, 'String to find the file URL', :type => :string, :default => 'songid'
   end
 
   Trollop::die :input_dir, 'Provide the input directory' unless opts[:input_dir]
   Trollop::die :output_dir, 'Provide the output directory' unless opts[:output_dir]
   Trollop::die :matching_string, 'Provide the matching_string' unless opts[:matching_string]
 
-  SongDownloader.new(input_dir: opts[:input_dir], output_dir: opts[:output_dir],
+  FileDownloader.new(input_dir: opts[:input_dir], output_dir: opts[:output_dir],
                      matching_string: opts[:matching_string]).main
 
 end
