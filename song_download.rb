@@ -14,6 +14,7 @@
 #limitations under the License.
 
 require 'trollop'
+require "celluloid/pmap"
 
 class SongDownloader
 
@@ -70,7 +71,7 @@ class SongDownloader
   end
 
   def download(songs,download_dir)
-    songs.each do |song_metadata|
+    songs.pmap do |song_metadata|
       puts "Downloading #{song_metadata["name"]} from #{song_metadata["url"]}"
       `wget -O "#{download_dir}/#{song_metadata["name"]}.mp3" "#{song_metadata["url"]}"`
     end
