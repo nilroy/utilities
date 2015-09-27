@@ -81,7 +81,7 @@ class FileDownloader
   def main()
     timer = Timeit.ti do
       input_files = get_input_files(@input_dir)
-      input_files.each do |input_file|
+      input_files.pmap do |input_file|
         f = open(input_file,"r")
         lines = f.readlines()
         title_dir = create_title_dir(lines)
