@@ -45,7 +45,21 @@ class StringSum
       end
       sum += val
     end
-    puts sum
+    l = sum.to_s.split('')
+    while true
+      if l.count == 1
+        puts sum.to_i
+        break
+      else
+        l1 = l.collect {|l| l.to_i}
+        sum = 0
+        l1.each do |a|
+          sum += a
+        end
+        l = sum.to_s.split('')
+        next
+      end
+    end
   end
 
 end
