@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby
 
-require 'trollop'
+require 'optimist'
 
 class StringSum
 
@@ -66,11 +66,11 @@ end
 
 if __FILE__ == $0
 
-  opts = Trollop::options do
+  opts = Optimist.options do
     opt :input, 'The string whose sum is needed', :type => :string, :default => nil
   end
 
-  Trollop::die :input, 'Input string needed' unless opts[:input]
+  Optimist.die :input, 'Input string needed' unless opts[:input]
 
   stringsum = StringSum.new(input: opts[:input])
   stringsum.string_sum
