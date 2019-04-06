@@ -1,5 +1,5 @@
 source 'http://rubygems.org'
 
-gem 'trollop', '2.0'
+gem 'optimist'
 gem 'celluloid-pmap'
 gem 'timeit'
