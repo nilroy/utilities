@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Set the following in your ~/.aws/config
+# cli_follow_urlparam = false
+
 source_env=$1
 destination_env=$2
 
